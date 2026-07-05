@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LeadFlow AI — Real Estate Lead Follow-Up System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0F1B2D;
+    --navy2: #162236;
+    --navy3: #1E3050;
+    --gold: #C9A84C;
+    --gold2: #E8C76A;
+    --gold-pale: rgba(201,168,76,0.12);
+    --white: #FFFFFF;
+    --off-white: #F5F3EF;
+    --gray: #8A9BB0;
+    --gray2: #B8C4D0;
+    --green: #2ECC71;
+    --green-pale: rgba(46,204,113,0.12);
+    --red: #E74C3C;
+    --border: rgba(255,255,255,0.08);
+    --card-bg: rgba(255,255,255,0.04);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--navy2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: -0.3px;
+  }
+  .logo span { color: var(--white); }
+  .header-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--green-pale);
+    border: 1px solid rgba(46,204,113,0.3);
+    border-radius: 999px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--green);
+  }
+  .pulse {
+    width: 7px; height: 7px;
+    background: var(--green);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* LAYOUT */
+  .main { display: grid; grid-template-columns: 1fr 1fr; gap: 0; min-height: calc(100vh - 64px); }
+
+  /* LEFT PANEL */
+  .left-panel {
+    padding: 2.5rem 2rem;
+    border-right: 1px solid var(--border);
+    overflow-y: auto;
+  }
+
+  .section-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+    line-height: 1.3;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--gray);
+    margin-bottom: 1.75rem;
+    line-height: 1.6;
+  }
+
+  /* FORM */
+  .form-group { margin-bottom: 1rem; }
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--gray2);
+    margin-bottom: 5px;
+    letter-spacing: 0.02em;
+  }
+  input, select, textarea {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 14px;
+    color: var(--white);
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  input::placeholder, textarea::placeholder { color: var(--gray); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.06);
+  }
+  select option { background: var(--navy2); color: var(--white); }
+  textarea { resize: vertical; min-height: 80px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .submit-btn {
+    width: 100%;
+    background: var(--gold);
+    color: var(--navy);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 13px;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s, transform 0.1s;
+    letter-spacing: 0.02em;
+  }
+  .submit-btn:hover { background: var(--gold2); }
+  .submit-btn:active { transform: scale(0.99); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+  /* STATS ROW */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 1.75rem;
+  }
+  .stat-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold);
+  }
+  .stat-label { font-size: 11px; color: var(--gray); margin-top: 2px; }
+
+  /* RIGHT PANEL */
+  .right-panel {
+    padding: 2.5rem 2rem;
+    overflow-y: auto;
+    background: var(--navy2);
+  }
+
+  /* OUTPUT AREA */
+  .output-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    text-align: center;
+    color: var(--gray);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .output-placeholder svg { opacity: 0.3; margin-bottom: 12px; }
+  .output-placeholder p { font-size: 13px; line-height: 1.6; }
+
+  .output-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .output-card.show { display: block; }
+  .output-card-header {
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.04);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .output-card-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .copy-btn {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gray);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px 10px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .copy-btn:hover { color: var(--white); border-color: var(--gray2); }
+  .copy-btn.copied { color: var(--green); border-color: var(--green); }
+
+  .output-body {
+    padding: 14px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: var(--off-white);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* LEAD CARD */
+  .lead-card {
+    background: var(--gold-pale);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: var(--radius);
+    padding: 14px;
+    margin-bottom: 1rem;
+    display: none;
+  }
+  .lead-card.show { display: block; }
+  .lead-card-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+  .lead-detail { display: flex; gap: 8px; margin-bottom: 5px; align-items: flex-start; }
+  .lead-key { font-size: 12px; color: var(--gray); min-width: 80px; flex-shrink: 0; }
+  .lead-val { font-size: 13px; color: var(--white); font-weight: 500; }
+
+  /* LOADING */
+  .loading {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    color: var(--gray);
+    font-size: 13px;
+    padding: 1rem 0;
+    margin-bottom: 1rem;
+  }
+  .loading.show { display: flex; }
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* WORKFLOW VIZ */
+  .workflow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 1.75rem;
+  }
+  .wf-step {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 5px 12px;
+    font-size: 11px;
+    color: var(--gray2);
+    font-weight: 500;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .wf-step.active { border-color: var(--gold); color: var(--gold); }
+  .wf-step.done { border-color: var(--green); color: var(--green); }
+  .wf-arrow { color: var(--border); font-size: 14px; }
+
+  /* ALERT */
+  .alert {
+    background: var(--green-pale);
+    border: 1px solid rgba(46,204,113,0.3);
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--green);
+    margin-bottom: 1rem;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    line-height: 1.5;
+  }
+  .alert.show { display: flex; }
+
+  /* HOW IT WORKS */
+  .how-section { margin-top: 1.5rem; }
+  .how-title { font-size: 12px; font-weight: 600; color: var(--gray); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+  .how-step { display: flex; gap: 10px; margin-bottom: 10px; align-items: flex-start; }
+  .how-num { width: 22px; height: 22px; border-radius: 50%; background: var(--gold-pale); border: 1px solid rgba(201,168,76,0.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--gold); flex-shrink: 0; margin-top: 1px; }
+  .how-text { font-size: 13px; color: var(--gray2); line-height: 1.6; }
+  .how-text strong { color: var(--white); }
+
+  /* DIVIDER */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+
+  @media (max-width: 768px) {
+    .main { grid-template-columns: 1fr; }
+    .left-panel { border-right: none; border-bottom: 1px solid var(--border); }
+    .form-row { grid-template-columns: 1fr; }
+    .stats-row { grid-template-columns: repeat(3,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo">LeadFlow<span> AI</span></div>
+  <div class="header-badge">
+    <div class="pulse"></div>
+    Live Demo
+  </div>
+</header>
+
+<div class="main">
+
+  <!-- LEFT: LEAD INTAKE FORM -->
+  <div class="left-panel">
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-val">60s</div>
+        <div class="stat-label">Response time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">3x</div>
+        <div class="stat-label">More conversions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">24/7</div>
+        <div class="stat-label">Always on</div>
+      </div>
+    </div>
+
+    <div class="section-eyebrow">Step 1 — New Lead Comes In</div>
+    <div class="section-title">Lead Intake Form</div>
+    <div class="section-sub">Simulates a lead arriving from Zillow, Realtor.com, or your website contact form.</div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" id="fname" placeholder="e.g. Michael" value="Michael">
+      </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" id="lname" placeholder="e.g. Johnson" value="Johnson">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" id="email" placeholder="e.g. michael@gmail.com" value="michael.johnson@gmail.com">
+    </div>
+
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="text" id="phone" placeholder="e.g. (555) 234-5678" value="(555) 234-5678">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Buyer or Seller?</label>
+        <select id="type">
+          <option value="buyer">Buyer</option>
+          <option value="seller">Seller</option>
+          <option value="both">Both</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Budget Range</label>
+        <select id="budget">
+          <option value="Under $300K">Under $300K</option>
+          <option value="$300K–$500K" selected>$300K–$500K</option>
+          <option value="$500K–$800K">$500K–$800K</option>
+          <option value="$800K–$1M">$800K–$1M</option>
+          <option value="$1M+">$1M+</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Preferred Area / Neighborhood</label>
+      <input type="text" id="area" placeholder="e.g. Austin, TX — downtown area" value="Austin, TX — downtown area">
+    </div>
+
+    <div class="form-group">
+      <label>Timeline to Buy/Sell</label>
+      <select id="timeline">
+        <option value="ASAP">ASAP</option>
+        <option value="1–3 months" selected>1–3 months</option>
+        <option value="3–6 months">3–6 months</option>
+        <option value="6–12 months">6–12 months</option>
+        <option value="Just exploring">Just exploring</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Message from Lead</label>
+      <textarea id="message" placeholder="What the lead typed in the contact form...">Hi, I'm looking for a 3-bedroom home near downtown Austin with a budget around $400K. We're relocating from Chicago and would love to connect with an agent who knows the area well. Ideally hoping to close within the next 2 months.</textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Agent Name (Your Name)</label>
+      <input type="text" id="agent" placeholder="e.g. Sarah Williams" value="Sarah Williams">
+    </div>
+
+    <button class="submit-btn" id="generateBtn" onclick="generateFollowUp()">
+      ⚡ Generate AI Follow-Up Now
+    </button>
+
+    <div class="how-section">
+      <hr class="divider">
+      <div class="how-title">How this system works</div>
+      <div class="how-step">
+        <div class="how-num">1</div>
+        <div class="how-text"><strong>Lead submits a form</strong> on Zillow, your website, or any property portal</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">2</div>
+        <div class="how-text"><strong>AI reads the lead details</strong> and generates a personalized follow-up email in seconds</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">3</div>
+        <div class="how-text"><strong>Email is sent automatically</strong> to the lead within 60 seconds — even at 3am</div>
+      </div>
+      <div class="how-step">
+        <div class="how-num">4</div>
+        <div class="how-text"><strong>Agent gets notified</strong> with the lead summary and a suggested call script</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: AI OUTPUT -->
+  <div class="right-panel">
+
+    <div class="section-eyebrow">Step 2 — AI Responds Instantly</div>
+    <div class="section-title">AI-Generated Outputs</div>
+    <div class="section-sub">Watch the system generate a personalized email, agent alert, and call script in real time.</div>
+
+    <!-- Workflow steps -->
+    <div class="workflow">
+      <div class="wf-step" id="wf1">📋 Lead received</div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step" id="wf2">🤖 AI processing</div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step" id="wf3">📧 Email sent</div>
+      <div class="wf-arrow">→</div>
+      <div class="wf-step" id="wf4">🔔 Agent notified</div>
+    </div>
+
+    <!-- Lead summary card -->
+    <div class="lead-card" id="leadCard">
+      <div class="lead-card-title">📋 Lead Summary</div>
+      <div id="leadDetails"></div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <span id="loadingText">AI is generating your follow-up...</span>
+    </div>
+
+    <!-- Success alert -->
+    <div class="alert" id="successAlert">
+      ✅ <span>Email sent to lead automatically. Agent notified. Response time: <strong>8 seconds.</strong></span>
+    </div>
+
+    <!-- Email output -->
+    <div class="output-card" id="emailCard">
+      <div class="output-card-header">
+        <div class="output-card-label">📧 Follow-up Email to Lead</div>
+        <button class="copy-btn" onclick="copyText('emailBody', this)">Copy</button>
+      </div>
+      <div class="output-body" id="emailBody"></div>
+    </div>
+
+    <!-- Agent alert -->
+    <div class="output-card" id="agentCard">
+      <div class="output-card-header">
+        <div class="output-card-label">🔔 Agent Notification</div>
+        <button class="copy-btn" onclick="copyText('agentBody', this)">Copy</button>
+      </div>
+      <div class="output-body" id="agentBody"></div>
+    </div>
+
+    <!-- Call script -->
+    <div class="output-card" id="callCard">
+      <div class="output-card-header">
+        <div class="output-card-label">📞 Suggested Call Script</div>
+        <button class="copy-btn" onclick="copyText('callBody', this)">Copy</button>
+      </div>
+      <div class="output-body" id="callBody"></div>
+    </div>
+
+    <!-- Placeholder when empty -->
+    <div class="output-placeholder" id="placeholder">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M13 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V9z"/>
+        <polyline points="13 2 13 9 20 9"/>
+      </svg>
+      <p>Fill in the lead details on the left and click <strong style="color:var(--gold)">Generate AI Follow-Up</strong> to see the system in action.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const STEPS = ['wf1','wf2','wf3','wf4'];
+
+function setWorkflow(activeIdx) {
+  STEPS.forEach((id, i) => {
+    const el = document.getElementById(id);
+    el.className = 'wf-step';
+    if (i < activeIdx) el.classList.add('done');
+    else if (i === activeIdx) el.classList.add('active');
+  });
+}
+
+function showLeadCard() {
+  const fname = document.getElementById('fname').value || 'Unknown';
+  const lname = document.getElementById('lname').value || '';
+  const email = document.getElementById('email').value || '—';
+  const phone = document.getElementById('phone').value || '—';
+  const type  = document.getElementById('type').value;
+  const budget= document.getElementById('budget').value;
+  const area  = document.getElementById('area').value || '—';
+  const timeline = document.getElementById('timeline').value;
+
+  const details = [
+    ['Name', `${fname} ${lname}`],
+    ['Email', email],
+    ['Phone', phone],
+    ['Type', type.charAt(0).toUpperCase() + type.slice(1)],
+    ['Budget', budget],
+    ['Area', area],
+    ['Timeline', timeline],
+  ];
+
+  document.getElementById('leadDetails').innerHTML = details.map(([k,v]) =>
+    `<div class="lead-detail"><span class="lead-key">${k}</span><span class="lead-val">${v}</span></div>`
+  ).join('');
+
+  document.getElementById('leadCard').classList.add('show');
+}
+
+async function generateFollowUp() {
+  const fname    = document.getElementById('fname').value.trim() || 'there';
+  const lname    = document.getElementById('lname').value.trim() || '';
+  const email    = document.getElementById('email').value.trim();
+  const phone    = document.getElementById('phone').value.trim();
+  const type     = document.getElementById('type').value;
+  const budget   = document.getElementById('budget').value;
+  const area     = document.getElementById('area').value.trim();
+  const timeline = document.getElementById('timeline').value;
+  const message  = document.getElementById('message').value.trim();
+  const agent    = document.getElementById('agent').value.trim() || 'Your Agent';
+
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.textContent = 'Generating...';
+
+  // Hide outputs
+  ['emailCard','agentCard','callCard','successAlert'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('leadCard').classList.remove('show');
+
+  // Step 1
+  setWorkflow(0);
+  showLeadCard();
+  await delay(700);
+
+  // Step 2 — loading
+  setWorkflow(1);
+  document.getElementById('loading').classList.add('show');
+  document.getElementById('loadingText').textContent = 'AI is reading lead details...';
+  await delay(800);
+  document.getElementById('loadingText').textContent = 'Generating personalized email...';
+
+  const prompt = `You are an AI assistant for a real estate agent named ${agent}.
+
+A new lead just came in. Generate THREE things:
+
+Lead details:
+- Name: ${fname} ${lname}
+- Email: ${email}
+- Phone: ${phone}
+- Type: ${type}
+- Budget: ${budget}
+- Area: ${area}
+- Timeline: ${timeline}
+- Message: "${message}"
+
+Generate the following and separate each with exactly "---SPLIT---":
+
+1. FOLLOW-UP EMAIL: A warm, personalized follow-up email from ${agent} to the lead. Subject line first (format: "Subject: ..."), then the email body. 150-200 words. Professional but friendly. Reference specific details from their message. End with a clear call to action to schedule a call.
+
+2. AGENT NOTIFICATION: A brief internal notification to agent ${agent} summarizing this lead. Include: lead name, contact info, key needs, urgency score (1-10), and 2-3 recommended next actions. 80-100 words.
+
+3. CALL SCRIPT: A short 60-second phone call opening script for ${agent} to use when calling this lead. Natural, conversational, references their specific situation. 80-100 words.
+
+Return only the three items separated by ---SPLIT--- with no additional commentary.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    const fullText = data.content.map(b => b.text || '').join('');
+    const parts = fullText.split('---SPLIT---').map(s => s.trim());
+
+    const emailText = parts[0] || 'Could not generate email.';
+    const agentText = parts[1] || 'Could not generate notification.';
+    const callText  = parts[2] || 'Could not generate call script.';
+
+    // Step 3
+    document.getElementById('loading').classList.remove('show');
+    setWorkflow(2);
+    document.getElementById('emailBody').textContent = emailText;
+    document.getElementById('emailCard').classList.add('show');
+    await delay(600);
+
+    // Step 4
+    setWorkflow(3);
+    document.getElementById('agentBody').textContent = agentText;
+    document.getElementById('agentCard').classList.add('show');
+    await delay(400);
+    document.getElementById('callBody').textContent = callText;
+    document.getElementById('callCard').classList.add('show');
+    document.getElementById('successAlert').classList.add('show');
+
+    // All done
+    STEPS.forEach(id => {
+      document.getElementById(id).className = 'wf-step done';
+    });
+
+  } catch (err) {
+    document.getElementById('loading').classList.remove('show');
+    document.getElementById('emailBody').textContent = 'Error connecting to AI. Please try again.';
+    document.getElementById('emailCard').classList.add('show');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚡ Generate AI Follow-Up Now';
+}
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function copyText(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
